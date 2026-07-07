@@ -13,4 +13,4 @@
 
 ## Demo
 
-[線上瀏覽](https://chun12300.github.io/-/)
+[線上瀏覽](https://chun12300.github.io/XuanyiMingli/)
