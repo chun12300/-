@@ -4,83 +4,60 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Xuanyi Mingli · 玄怡命理</title>
-<link rel="stylesheet" href="style.css">
 <style>
-  .hero {
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: #0d1220;
+    width: 100%;
+    min-height: 100%;
+  }
+
+  .hero-frame {
+    position: relative;
     width: 100%;
     max-width: 720px;
     margin: 0 auto;
-    display: block;
-    border-radius: 0 0 24px 24px;
-    box-shadow: 0 16px 40px rgba(0,0,0,0.5);
-  }
-  .hero-wrap {
-    text-align: center;
-    padding-bottom: 4px;
+    line-height: 0;
   }
 
-  /* 手機螢幕:限制圖片高度,避免要滑很久才看到功能卡片 */
-  @media (max-width: 600px) {
-    .hero-wrap {
-      max-height: 62vh;
-      overflow: hidden;
-      border-radius: 0 0 20px 20px;
-    }
-    .hero {
-      border-radius: 0 0 20px 20px;
-      object-fit: cover;
-      object-position: top center;
-      height: 62vh;
-    }
-    .topbar {
-      flex-wrap: wrap;
-      gap: 8px;
-    }
+  .hero-frame img {
+    width: 100%;
+    height: auto;
+    display: block;
   }
+
+  .hotspot {
+    position: absolute;
+    top: 62%;
+    height: 29%;
+    display: block;
+    border-radius: 4%;
+    -webkit-tap-highlight-color: rgba(230, 199, 138, 0.25);
+  }
+
+  .hotspot:hover,
+  .hotspot:focus-visible {
+    outline: 2px solid rgba(230, 199, 138, 0.6);
+    outline-offset: -2px;
+  }
+
+  .hotspot.bazi      { left: 4.5%;  width: 21%; }
+  .hotspot.tarot     { left: 27.5%; width: 21%; }
+  .hotspot.horoscope { left: 51%;   width: 21%; }
+  .hotspot.mingli    { left: 74.5%; width: 21%; }
 </style>
 </head>
 <body>
 
-<div class="hero-wrap">
-  <img class="hero" src="hero.jpg" alt="玄怡命理 · 洞悉命運,指引未來">
-</div>
+  <div class="hero-frame">
+    <img src="hero.jpg" alt="玄怡命理 · 洞悉命運,指引未來 · 八字排盤、塔羅占卜、星座運勢、生命靈數">
 
-<div class="page">
-
-  <div class="topbar" style="border-top:1px solid var(--border);padding-top:22px;">
-    <div>
-      <div class="logo brush">玄怡命理</div>
-      <div style="font-size:12px;color:var(--muted);letter-spacing:0.1em;">XUANYI MINGLI</div>
-    </div>
-    <div style="font-size:13px;color:var(--muted)">命理 · 玄學 · 占卜</div>
+    <a class="hotspot bazi" href="bazi.html" aria-label="八字排盤"></a>
+    <a class="hotspot tarot" href="tarot.html" aria-label="塔羅占卜"></a>
+    <a class="hotspot horoscope" href="horoscope.html" aria-label="星座運勢"></a>
+    <a class="hotspot mingli" href="mingli.html" aria-label="生命靈數"></a>
   </div>
 
-  <div class="tool-grid" style="margin-top:8px;">
-
-    <a class="tool-card" href="bazi.html">
-      <span class="glyph">命</span>
-      <div class="name">八字排盤</div>
-    </a>
-
-    <a class="tool-card" href="tarot.html">
-      <span class="glyph">卜</span>
-      <div class="name">塔羅占卜</div>
-    </a>
-
-    <a class="tool-card" href="horoscope.html">
-      <span class="glyph">星</span>
-      <div class="name">星座運勢</div>
-    </a>
-
-    <a class="tool-card" href="mingli.html">
-      <span class="glyph">數</span>
-      <div class="name">生命靈數</div>
-    </a>
-
-  </div>
-
-  <div class="footer-note">僅供參考娛樂,人生的路仍要靠自己走。</div>
-
-</div>
 </body>
 </html>
