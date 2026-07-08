@@ -1,1 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>塔羅占卜 · Xuanyi Mingli</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .spread-choice {
+    display: flex;
+    gap: 12px;
+    margin-top: 18px;
+  }
+  .spread-choice button {
+    flex: 1;
+    background: var(--bg-deep);
+    border: 1px solid var(--border);
+    color: var(--ink);
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 14px;
+  }
+  .spread-choice button.active {
+    border-color: var(--gold);
+    color: var(--gold-light);
+    background: var(--bg-panel-2);
+  }
+  .cards-area {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 28px;
+    flex-wrap: wrap;
+  }
+  .card-slot {
+    width: 130px;
+  }
+  .card-slot .slot-title {
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .tarot-card {
+    width: 130px;
+    height: 200px;
+    perspective: 1000px;
+    cursor: pointer;
+  }
+  .tarot-card .inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.7s cubic-bezier(.3,.9,.4,1);
+    transform-style: preserve-3d;
+  }
+  .tarot-card.flipped .inner { transform: rotateY(180deg); }
+  .tarot-card .face {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    backface-visibility: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 10px;
+  }
+  .tarot-card .front {
+    background: linear-gradient(160deg, var(--bg-panel-2), var(--bg-panel));
+    border: 2px solid var(--gold);
+  }
+  .tarot-card .front span {
+    font-family: 'Ma Shan Zheng', cursive;
+    font-size: 42px;
+    color: var(--gold-light);
+    opacity: 0.85;
+  }
+  .tarot-card .back {
+    background: linear-gradient(160deg, #241226, var(--bg-panel));
+    border: 2px solid var(--red-seal-light);
+    transform: rotateY(180deg);
+    flex-direction: column;
+    gap: 6px;
+  }
+  .tarot-card .back .cname {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 16px;
+    color: var(--gold-light);
+  }
+  .tarot-card .back .orient {
+    font-size: 12px;
+    color: var(--red-seal-light);
+  }
+  .meanings {
+    margin-top: 26px;
+  }
+  .meaning-item {
+    border-top: 1px dashed rgba(201,162,74,0.18);
+    padding: 14px 0;
+  }
+  .meaning-item .head {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Noto Serif TC', serif;
+    color: var(--gold-light);
+    margin-bottom: 6px;
+  }
+  .meaning-item .body {
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--ink);
+  }
+</style>
+</head>
+<body>
+<div class="page">
 
+  <div class="topbar">
+    <div>
+      <div class="logo brush">玄怡命理</div>
+      <div style="font-size:12px;color:var(--muted);letter-spacing:0.1em;">XUANYI MINGLI</div>
+    </div>
+    <a class="back" href="index.html">← 返回</a>
+  </div>
+
+  <div class="card">
+    <h1>塔羅占卜</h1>
+    <p style="color:var(--muted);line-height:1.8;">
+      在心中默想你想探問的問題,選擇牌陣,再輕輕點擊每張牌翻開。
+    </p>
+
+    <div class="spread-choice">
+      <button id="spread1" class="active" onclick="setSpread(1)">單張指引</button>
+      <button id="spread3" onclick="setSpread(3)">三張牌陣(過去・現在・未來)</button>
+    </div>
+
+    <div style="text-align:center;margin-top:20px;">
+      <button class="btn" onclick="drawCards()">開始抽牌</button>
+    </div>
+
+    <div class="cards-area" id="cardsArea"></div>
+
+    <div class="meanings" id="meanings"></div>
+  </div>
+
+  <div class="footer-note">僅供參考娛樂,人生的路仍要靠自己走。</div>
+</div>
+
+<script>
+const MAJOR_ARCANA = [
+  {name:"愚人", up:"新的開始、自由與無限可能,勇敢踏出第一步。", rev:"衝動冒進、缺乏計畫,行動前宜多加思考。"},
+  {name:"魔術師", up:"創造力與行動力兼備,擁有實現目標的資源與能力。", rev:"眼高手低、言行不一,能力尚未被妥善運用。"},
+  {name:"女祭司", up:"直覺敏銳,適合傾聽內在聲音,靜觀其變。", rev:"忽視直覺、資訊被隱藏,需更留意細節。"},
+  {name:"皇后", up:"豐盛、滋養與創造力旺盛的階段。", rev:"過度付出或忽略自我照顧,需找回平衡。"},
+  {name:"皇帝", up:"秩序、掌控與穩定的領導力。", rev:"過度控制或固執己見,宜適度放手。"},
+  {name:"教皇", up:"傳統智慧與指引,適合尋求導師或制度支持。", rev:"墨守成規,需要跳脫框架思考。"},
+  {name:"戀人", up:"重要的選擇與關係,價值觀契合帶來和諧。", rev:"猶豫不決或關係失衡,需誠實面對感受。"},
+  {name:"戰車", up:"意志堅定,憑決心與行動力克服阻礙。", rev:"方向不明或內耗嚴重,需重新聚焦目標。"},
+  {name:"力量", up:"以溫柔而堅定的內在力量化解困難。", rev:"自我懷疑或情緒失控,需要更多耐心。"},
+  {name:"隱士", up:"適合獨處沉澱,向內尋找答案。", rev:"過度孤立或逃避現實,適度尋求連結。"},
+  {name:"命運之輪", up:"時機轉變,順應變化將帶來新局面。", rev:"抗拒改變或運勢受阻,需調整心態。"},
+  {name:"正義", up:"公平、真相與因果,決策將依理而行。", rev:"有失公允或逃避責任,需重新檢視。"},
+  {name:"倒吊人", up:"換個角度看待困境,放下執著會有新體悟。", rev:"停滯不前或犧牲徒勞,需思考是否值得。"},
+  {name:"死神", up:"舊階段的結束,為新開始騰出空間。", rev:"抗拒轉變、停滯在過去,拖延必要的告別。"},
+  {name:"節制", up:"調和與耐心,穩健整合能帶來平衡。", rev:"過猶不及、失去分寸,需重新拿捏尺度。"},
+  {name:"惡魔", up:"受困於欲望或恐懼,需正視自己的執著。", rev:"開始掙脫束縛,覺察到限制自己的模式。"},
+  {name:"塔", up:"劇烈的變動與衝擊,舊有結構瓦解。", rev:"抗拒必要的崩解,拖延反而累積更大風險。"},
+  {name:"星星", up:"希望、療癒與信心重建的時刻。", rev:"信心動搖或理想模糊,需重新連結初心。"},
+  {name:"月亮", up:"直覺與潛意識活躍,但也可能伴隨迷惘。", rev:"恐懼與幻象逐漸釐清,真相將浮現。"},
+  {name:"太陽", up:"喜悅、成功與清晰,一切順遂明朗。", rev:"過度樂觀或短暫的失落,調整期待即可。"},
+  {name:"審判", up:"覺醒與重生,回顧過去以做出新的決定。", rev:"自我批判過重或猶豫是否行動,需給自己多點寬容。"},
+  {name:"世界", up:"圓滿完成、階段性成就達成。", rev:"尚未收尾或有所遺漏,需要臨門一腳。"}
+];
+
+let currentSpread = 1;
+const POSITIONS_3 = ["過去", "現在", "未來"];
+
+function setSpread(n) {
+  currentSpread = n;
+  document.getElementById('spread1').classList.toggle('active', n === 1);
+  document.getElementById('spread3').classList.toggle('active', n === 3);
+  document.getElementById('cardsArea').innerHTML = '';
+  document.getElementById('meanings').innerHTML = '';
+}
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function drawCards() {
+  const area = document.getElementById('cardsArea');
+  const meaningsEl = document.getElementById('meanings');
+  area.innerHTML = '';
+  meaningsEl.innerHTML = '';
+
+  const shuffled = shuffle(MAJOR_ARCANA);
+  const picks = shuffled.slice(0, currentSpread).map(c => ({
+    ...c,
+    reversed: Math.random() < 0.5
+  }));
+
+  picks.forEach((card, idx) => {
+    const slot = document.createElement('div');
+    slot.className = 'card-slot';
+
+    const title = document.createElement('div');
+    title.className = 'slot-title';
+    title.textContent = currentSpread === 3 ? POSITIONS_3[idx] : '指引';
+    slot.appendChild(title);
+
+    const cardEl = document.createElement('div');
+    cardEl.className = 'tarot-card';
+    cardEl.innerHTML = `
+      <div class="inner">
+        <div class="face front"><span>✦</span></div>
+        <div class="face back">
+          <div class="cname">${card.name}</div>
+          <div class="orient">${card.reversed ? '逆位' : '正位'}</div>
+        </div>
+      </div>
+    `;
+    cardEl.addEventListener('click', () => {
+      cardEl.classList.toggle('flipped');
+    });
+
+    slot.appendChild(cardEl);
+    area.appendChild(slot);
+  });
+
+  picks.forEach((card, idx) => {
+    const item = document.createElement('div');
+    item.className = 'meaning-item';
+    const posLabel = currentSpread === 3 ? POSITIONS_3[idx] + ' · ' : '';
+    item.innerHTML = `
+      <div class="head"><span>${posLabel}${card.name}(${card.reversed ? '逆位' : '正位'})</span></div>
+      <div class="body">${card.reversed ? card.rev : card.up}</div>
+    `;
+    meaningsEl.appendChild(item);
+  });
+}
+</script>
+</body>
+</html>
