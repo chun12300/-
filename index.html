@@ -33,6 +33,7 @@
     height: 29%;
     display: block;
     border-radius: 4%;
+    text-decoration: none;
     -webkit-tap-highlight-color: rgba(230, 199, 138, 0.25);
   }
 
@@ -46,6 +47,37 @@
   .hotspot.tarot     { left: 27.5%; width: 21%; }
   .hotspot.horoscope { left: 51%;   width: 21%; }
   .hotspot.mingli    { left: 74.5%; width: 21%; }
+
+  /* 疊在每張卡片下緣的玄學字眼 + 價位標籤 */
+  .tag {
+    position: absolute;
+    bottom: 4%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 92%;
+    text-align: center;
+    background: rgba(13, 18, 32, 0.78);
+    border: 1px solid rgba(201, 162, 74, 0.55);
+    border-radius: 999px;
+    padding: 3% 2%;
+    line-height: 1.3;
+  }
+
+  .tag .phrase {
+    display: block;
+    color: #e6cf8a;
+    font-size: clamp(8px, 2.5vw, 12px);
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  .tag .price {
+    display: block;
+    color: #f2b8bd;
+    font-weight: 700;
+    font-size: clamp(9px, 2.9vw, 13px);
+    margin-top: 2%;
+  }
 </style>
 </head>
 <body>
@@ -53,10 +85,34 @@
   <div class="hero-frame">
     <img src="hero.jpg" alt="玄怡命理 · 洞悉命運,指引未來 · 八字排盤、塔羅占卜、星座運勢、生命靈數">
 
-    <a class="hotspot bazi" href="bazi.html" aria-label="八字排盤"></a>
-    <a class="hotspot tarot" href="tarot.html" aria-label="塔羅占卜"></a>
-    <a class="hotspot horoscope" href="horoscope.html" aria-label="星座運勢"></a>
-    <a class="hotspot mingli" href="mingli.html" aria-label="生命靈數"></a>
+    <a class="hotspot bazi" href="bazi.html" aria-label="八字排盤,窺探天機,NT$800">
+      <span class="tag">
+        <span class="phrase">窺探天機</span>
+        <span class="price">NT$ 800</span>
+      </span>
+    </a>
+
+    <a class="hotspot tarot" href="tarot.html" aria-label="塔羅占卜,問卜卦象,NT$500">
+      <span class="tag">
+        <span class="phrase">問卜卦象</span>
+        <span class="price">NT$ 500</span>
+      </span>
+    </a>
+
+    <a class="hotspot horoscope" href="horoscope.html" aria-label="星座運勢,洞察流年,NT$300">
+      <span class="tag">
+        <span class="phrase">洞察流年</span>
+        <span class="price">NT$ 300</span>
+      </span>
+    </a>
+
+    <a class="hotspot mingli" href="mingli.html" aria-label="生命靈數,解碼天賦,NT$300">
+      <span class="tag">
+        <span class="phrase">解碼天賦</span>
+        <span class="price">NT$ 300</span>
+      </span>
+    </a>
+
   </div>
 
 </body>
