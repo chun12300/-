@@ -1,1 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>八字排盤 · Xuanyi Mingli</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
 
+  <div class="topbar">
+    <div>
+      <div class="logo brush">玄怡命理</div>
+      <div style="font-size:12px;color:var(--muted);letter-spacing:0.1em;">XUANYI MINGLI</div>
+    </div>
+    <a class="back" href="index.html">← 返回</a>
+  </div>
+
+  <div class="card">
+    <h1>八字排盤</h1>
+    <p style="color:var(--muted);line-height:1.8;">
+      輸入你的出生年、月、日與時辰,推算四柱干支與五行分布。
+    </p>
+
+    <label for="year">出生年份(西元)</label>
+    <input type="number" id="year" placeholder="例如 1990" min="1900" max="2100">
+
+    <label for="month">出生月份</label>
+    <select id="month">
+      <option value="">請選擇</option>
+    </select>
+
+    <label for="day">出生日期</label>
+    <select id="day">
+      <option value="">請選擇</option>
+    </select>
+
+    <label for="hour">出生時辰</label>
+    <select id="hour">
+      <option value="0">子時 23:00–01:00</option>
+      <option value="1">丑時 01:00–03:00</option>
+      <option value="2">寅時 03:00–05:00</option>
+      <option value="3">卯時 05:00–07:00</option>
+      <option value="4">辰時 07:00–09:00</option>
+      <option value="5">巳時 09:00–11:00</option>
+      <option value="6" selected>午時 11:00–13:00</option>
+      <option value="7">未時 13:00–15:00</option>
+      <option value="8">申時 15:00–17:00</option>
+      <option value="9">酉時 17:00–19:00</option>
+      <option value="10">戌時 19:00–21:00</option>
+      <option value="11">亥時 21:00–23:00</option>
+    </select>
+
+    <button class="btn" onclick="calcBazi()">開始排盤</button>
+
+    <div class="hint">
+      ※ 本工具以西曆日期簡化推算,月柱未精確對齊節氣交替時刻,僅供參考娛樂,精準命理仍建議諮詢專業命理師。
+    </div>
+
+    <div class="seal-wrap">
+      <div class="seal" id="seal">已批</div>
+    </div>
+
+    <div class="result" id="result">
+      <div class="row"><span class="label">年柱</span><span class="value" id="rYear">-</span></div>
+      <div class="row"><span class="label">月柱</span><span class="value" id="rMonth">-</span></div>
+      <div class="row"><span class="label">日柱</span><span class="value" id="rDay">-</span></div>
+      <div class="row"><span class="label">時柱</span><span class="value" id="rHour">-</span></div>
+      <div class="row"><span class="label">五行分布</span><span class="value" id="rWuxing">-</span></div>
+      <p class="interp" id="rInterp"></p>
+    </div>
+  </div>
+
+  <div class="footer-note">僅供參考娛樂,人生的路仍要靠自己走。</div>
+</div>
+
+<script>
+const GAN = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+const ZHI = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const GAN_WUXING = {'甲':'木','乙':'木','丙':'火','丁':'火','戊':'土','己':'土','庚':'金','辛':'金','壬':'水','癸':'水'};
+const ZHI_WUXING = {'子':'水','丑':'土','寅':'木','卯':'木','辰':'土','巳':'火','午':'火','未':'土','申':'金','酉':'金','戌':'土','亥':'水'};
+
+const MONTH_GAN_START = {0:2, 5:2, 1:4, 6:4, 2:6, 7:6, 3:8, 8:8, 4:0, 9:0};
+const HOUR_GAN_START = {0:0, 5:0, 1:2, 6:2, 2:4, 7:4, 3:6, 8:6, 4:8, 9:8};
+
+function mod(n, m) { return ((n % m) + m) % m; }
+
+function fillSelect(id, count, offset) {
+  const el = document.getElementById(id);
+  for (let i = offset; i < count + offset; i++) {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = i;
+    el.appendChild(opt);
+  }
+}
+fillSelect('month', 12, 1);
+fillSelect('day', 31, 1);
+
+function calcBazi() {
+  const y = parseInt(document.getElementById('year').value);
+  const m = parseInt(document.getElementById('month').value);
+  const d = parseInt(document.getElementById('day').value);
+  const h = parseInt(document.getElementById('hour').value);
+
+  if (!y || !m || !d || isNaN(h)) {
+    alert('請完整填寫出生年、月、日與時辰');
+    return;
+  }
+
+  const yearGanIdx = mod(y - 4, 10);
+  const yearZhiIdx = mod(y - 4, 12);
+  const yearGan = GAN[yearGanIdx];
+  const yearZhi = ZHI[yearZhiIdx];
+
+  const ref = Date.UTC(1900, 0, 31);
+  const target = Date.UTC(y, m - 1, d);
+  const dayOffset = Math.round((target - ref) / 86400000);
+  const dayGanIdx = mod(dayOffset, 10);
+  const dayZhiIdx = mod(dayOffset, 12);
+  const dayGan = GAN[dayGanIdx];
+  const dayZhi = ZHI[dayZhiIdx];
+
+  const monthZhiIdx = mod(m, 12);
+  const monthOffsetFromYin = mod(monthZhiIdx - 2, 12);
+  const monthGanStart = MONTH_GAN_START[yearGanIdx];
+  const monthGanIdx = mod(monthGanStart + monthOffsetFromYin, 10);
+  const monthGan = GAN[monthGanIdx];
+  const monthZhi = ZHI[monthZhiIdx];
+
+  const hourZhiIdx = h;
+  const hourGanStart = HOUR_GAN_START[dayGanIdx];
+  const hourGanIdx = mod(hourGanStart + hourZhiIdx, 10);
+  const hourGan = GAN[hourGanIdx];
+  const hourZhi = ZHI[hourZhiIdx];
+
+  document.getElementById('rYear').textContent = yearGan + yearZhi;
+  document.getElementById('rMonth').textContent = monthGan + monthZhi;
+  document.getElementById('rDay').textContent = dayGan + dayZhi;
+  document.getElementById('rHour').textContent = hourGan + hourZhi;
+
+  const chars = [yearGan, monthGan, dayGan, hourGan, yearZhi, monthZhi, dayZhi, hourZhi];
+  const count = {'木':0,'火':0,'土':0,'金':0,'水':0};
+  chars.forEach(c => {
+    const wx = GAN_WUXING[c] || ZHI_WUXING[c];
+    if (wx) count[wx]++;
+  });
+  const wuxingStr = Object.entries(count).map(([k,v]) => `${k}${v}`).join(' ');
+  document.getElementById('rWuxing').textContent = wuxingStr;
+
+  const maxWx = Object.entries(count).sort((a,b) => b[1]-a[1])[0][0];
+  const minWx = Object.entries(count).sort((a,b) => a[1]-b[1])[0][0];
+  document.getElementById('rInterp').textContent =
+    `日主天干為「${dayGan}」,五行屬${GAN_WUXING[dayGan]}。命盤中「${maxWx}」的力量較旺,「${minWx}」相對較弱,可作為調和五行、選擇顏色與方位時的參考。`;
+
+  document.getElementById('result').classList.add('show');
+  const seal = document.getElementById('seal');
+  seal.classList.remove('stamp');
+  void seal.offsetWidth;
+  seal.classList.add('stamp');
+}
+</script>
+</body>
+</html>
