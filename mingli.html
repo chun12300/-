@@ -1,1 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>生命靈數 · Xuanyi Mingli</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .num-circle {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    border: 3px solid var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Noto Serif TC', serif;
+    font-size: 36px;
+    color: var(--gold-light);
+    margin: 20px auto 4px;
+    background: var(--bg-deep);
+  }
+</style>
+</head>
+<body>
+<div class="page">
 
+  <div class="topbar">
+    <div>
+      <div class="logo brush">玄怡命理</div>
+      <div style="font-size:12px;color:var(--muted);letter-spacing:0.1em;">XUANYI MINGLI</div>
+    </div>
+    <a class="back" href="index.html">← 返回</a>
+  </div>
+
+  <div class="card">
+    <h1>生命靈數</h1>
+    <p style="color:var(--muted);line-height:1.8;">
+      將出生年、月、日的每個數字相加,化約至個位數,即為你的生命靈數(11、22、33 為大師數,予以保留)。
+    </p>
+
+    <label for="birth">出生日期</label>
+    <input type="date" id="birth">
+
+    <button class="btn" onclick="calcLifePath()">開始計算</button>
+
+    <div class="seal-wrap">
+      <div class="seal" id="seal">已解</div>
+    </div>
+
+    <div class="result" id="result">
+      <div class="num-circle" id="numCircle">-</div>
+      <div style="text-align:center;color:var(--muted);font-size:13px;margin-bottom:10px;">你的生命靈數</div>
+      <p class="interp" id="rInterp"></p>
+    </div>
+  </div>
+
+  <div class="footer-note">僅供參考娛樂,人生的路仍要靠自己走。</div>
+</div>
+
+<script>
+const INTERP = {
+  1: "獨立、開創、天生的領導者。你擅長開路先鋒,課題是學習在堅持己見與傾聽他人之間找到平衡。",
+  2: "體貼、合作、擅長協調。你重視關係與和諧,課題是建立自信,避免因害怕衝突而壓抑自己的聲音。",
+  3: "表達力強、樂觀、富有創造力。你擅長用言語或藝術感染他人,課題是把才華聚焦,而非四處分散。",
+  4: "務實、穩重、重視秩序。你是可靠的建構者,課題是在追求穩定之餘,保留彈性與冒險的空間。",
+  5: "熱愛自由、渴望變化、適應力強。你天生喜歡探索,課題是學習承諾與紀律,避免流於三分鐘熱度。",
+  6: "有責任感、重視家庭與照顧他人。你是天生的照顧者,課題是學會照顧自己,不讓付出變成犧牲。",
+  7: "喜歡思考、追求真理、內省力強。你適合深入鑽研,課題是走出孤獨,適時與人分享內心世界。",
+  8: "目標明確、擅長管理資源、企圖心強。你有成就大事的潛力,課題是在權力與物質之外,兼顧內在滿足。",
+  9: "富同理心、理想主義、樂於奉獻。你關懷更大的群體福祉,課題是學會放下,不強求每件事都完美落幕。",
+  11: "大師數:高度直覺與靈感,天生具有啟發他人的特質。課題是穩住敏感的內在,將靈感落實為行動。",
+  22: "大師數:兼具理想與務實的建構能力,能將宏大願景化為具體成果。課題是不被自我設定的高標準壓垮。",
+  33: "大師數:無私的愛與療癒力量,天生適合服務與教導他人。課題是設立界線,避免過度付出耗盡自己。"
+};
+
+function reduceNumber(n) {
+  while (n > 9 && n !== 11 && n !== 22 && n !== 33) {
+    n = String(n).split('').reduce((a, b) => a + parseInt(b), 0);
+  }
+  return n;
+}
+
+function calcLifePath() {
+  const val = document.getElementById('birth').value;
+  if (!val) {
+    alert('請選擇出生日期');
+    return;
+  }
+  const [y, m, d] = val.split('-').map(Number);
+  const sum = String(y).split('').reduce((a,b) => a + parseInt(b), 0)
+            + String(m).split('').reduce((a,b) => a + parseInt(b), 0)
+            + String(d).split('').reduce((a,b) => a + parseInt(b), 0);
+  const lifePath = reduceNumber(sum);
+
+  document.getElementById('numCircle').textContent = lifePath;
+  document.getElementById('rInterp').textContent = INTERP[lifePath] || '';
+
+  document.getElementById('result').classList.add('show');
+  const seal = document.getElementById('seal');
+  seal.classList.remove('stamp');
+  void seal.offsetWidth;
+  seal.classList.add('stamp');
+}
+</script>
+</body>
+</html>
