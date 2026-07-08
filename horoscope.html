@@ -1,1 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>星座運勢 · Xuanyi Mingli</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .sign-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-top: 18px;
+  }
+  @media (max-width: 480px) {
+    .sign-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  .sign-btn {
+    background: var(--bg-deep);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 12px 6px;
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .sign-btn .g { font-family:'Ma Shan Zheng',cursive; font-size:20px; display:block; color:var(--gold-light); }
+  .sign-btn.active { border-color: var(--gold); color: var(--gold-light); background: var(--bg-panel-2); }
+  .bar-track {
+    background: rgba(255,255,255,0.06);
+    border-radius: 999px;
+    height: 8px;
+    overflow: hidden;
+    margin-top: 4px;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--red-seal), var(--gold));
+  }
+</style>
+</head>
+<body>
+<div class="page">
 
+  <div class="topbar">
+    <div>
+      <div class="logo brush">玄怡命理</div>
+      <div style="font-size:12px;color:var(--muted);letter-spacing:0.1em;">XUANYI MINGLI</div>
+    </div>
+    <a class="back" href="index.html">← 返回</a>
+  </div>
+
+  <div class="card">
+    <h1>星座運勢</h1>
+    <p style="color:var(--muted);line-height:1.8;">選擇你的星座,查看今日運勢指引。</p>
+
+    <div class="sign-grid" id="signGrid"></div>
+
+    <div class="seal-wrap">
+      <div class="seal" id="seal">今示</div>
+    </div>
+
+    <div class="result" id="result">
+      <div class="row"><span class="label">日期</span><span class="value" id="rDate">-</span></div>
+      <div class="row"><span class="label">今日星座</span><span class="value" id="rSign">-</span></div>
+
+      <div style="margin-top:16px;">
+        <div class="row"><span class="label">事業</span><span class="value" id="vCareer">-</span></div>
+        <div class="bar-track"><div class="bar-fill" id="bCareer" style="width:0%"></div></div>
+      </div>
+      <div style="margin-top:14px;">
+        <div class="row"><span class="label">愛情</span><span class="value" id="vLove">-</span></div>
+        <div class="bar-track"><div class="bar-fill" id="bLove" style="width:0%"></div></div>
+      </div>
+      <div style="margin-top:14px;">
+        <div class="row"><span class="label">財運</span><span class="value" id="vMoney">-</span></div>
+        <div class="bar-track"><div class="bar-fill" id="bMoney" style="width:0%"></div></div>
+      </div>
+
+      <p class="interp" id="rInterp"></p>
+    </div>
+  </div>
+
+  <div class="footer-note">僅供參考娛樂,人生的路仍要靠自己走。</div>
+</div>
+
+<script>
+const SIGNS = [
+  {name:"牡羊座", glyph:"♈"}, {name:"金牛座", glyph:"♉"}, {name:"雙子座", glyph:"♊"},
+  {name:"巨蟹座", glyph:"♋"}, {name:"獅子座", glyph:"♌"}, {name:"處女座", glyph:"♍"},
+  {name:"天秤座", glyph:"♎"}, {name:"天蠍座", glyph:"♏"}, {name:"射手座", glyph:"♐"},
+  {name:"摩羯座", glyph:"♑"}, {name:"水瓶座", glyph:"♒"}, {name:"雙魚座", glyph:"♓"}
+];
+
+const CAREER_TEXT = [
+  "適合主動出擊,提出的想法容易獲得認同。",
+  "宜穩紮穩打,細節決定成敗,不要急於求成。",
+  "與人合作會有意外收穫,團隊力量大於單打獨鬥。",
+  "容易分心,建議列出優先順序再逐項處理。",
+  "有機會展現領導才能,勇於承擔會被看見。"
+];
+const LOVE_TEXT = [
+  "單身者有機會遇到談得來的對象,不妨主動一些。",
+  "穩定關係中適合安排一次深入的談心。",
+  "容易因小事起摩擦,溝通時多一點耐心。",
+  "浪漫氛圍濃厚,適合安排約會或驚喜。",
+  "宜多關注對方的感受,傾聽比表達更重要。"
+];
+const MONEY_TEXT = [
+  "正財運穩定,但不宜衝動投資或借貸。",
+  "有意外小收穫的可能,理財上仍需謹慎。",
+  "適合檢視預算,調整不必要的支出。",
+  "投資機會浮現,但務必做足功課再行動。",
+  "財運平穩,守成優於冒進。"
+];
+
+let selectedSign = null;
+
+function renderGrid() {
+  const grid = document.getElementById('signGrid');
+  SIGNS.forEach(s => {
+    const btn = document.createElement('div');
+    btn.className = 'sign-btn';
+    btn.innerHTML = `<span class="g">${s.glyph}</span>${s.name}`;
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.sign-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedSign = s.name;
+      showFortune(s.name);
+    });
+    grid.appendChild(btn);
+  });
+}
+renderGrid();
+
+function seededRandom(seedStr) {
+  let h = 0;
+  for (let i = 0; i < seedStr.length; i++) {
+    h = (h * 31 + seedStr.charCodeAt(i)) >>> 0;
+  }
+  return function () {
+    h = (h * 1103515245 + 12345) >>> 0;
+    return (h % 1000) / 1000;
+  };
+}
+
+function showFortune(signName) {
+  const today = new Date();
+  const dateStr = `${today.getFullYear()}/${today.getMonth()+1}/${today.getDate()}`;
+  const rng = seededRandom(signName + dateStr);
+
+  const cIdx = Math.floor(rng() * CAREER_TEXT.length);
+  const lIdx = Math.floor(rng() * LOVE_TEXT.length);
+  const mIdx = Math.floor(rng() * MONEY_TEXT.length);
+  const cScore = 40 + Math.floor(rng() * 60);
+  const lScore = 40 + Math.floor(rng() * 60);
+  const mScore = 40 + Math.floor(rng() * 60);
+
+  document.getElementById('rDate').textContent = dateStr;
+  document.getElementById('rSign').textContent = signName;
+  document.getElementById('vCareer').textContent = cScore + ' 分';
+  document.getElementById('vLove').textContent = lScore + ' 分';
+  document.getElementById('vMoney').textContent = mScore + ' 分';
+  document.getElementById('bCareer').style.width = cScore + '%';
+  document.getElementById('bLove').style.width = lScore + '%';
+  document.getElementById('bMoney').style.width = mScore + '%';
+  document.getElementById('rInterp').textContent =
+    `事業:${CAREER_TEXT[cIdx]} 愛情:${LOVE_TEXT[lIdx]} 財運:${MONEY_TEXT[mIdx]}`;
+
+  document.getElementById('result').classList.add('show');
+  const seal = document.getElementById('seal');
+  seal.classList.remove('stamp');
+  void seal.offsetWidth;
+  seal.classList.add('stamp');
+}
+</script>
+</body>
+</html>
