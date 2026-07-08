@@ -1,1 +1,281 @@
+/* ============================================
+   命理玄學站 - 共用主題樣式
+   風格:深夜墨藍 + 硃紅印章 + 燙金字
+   ============================================ */
 
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&family=Ma+Shan+Zheng&display=swap');
+
+:root {
+  --bg: #0d1220;
+  --bg-deep: #080b15;
+  --bg-panel: #161d33;
+  --bg-panel-2: #1c2540;
+  --gold: #c9a24a;
+  --gold-light: #e6cf8a;
+  --red-seal: #a3323c;
+  --red-seal-light: #c14652;
+  --ink: #ece7d6;
+  --muted: #8891a8;
+  --border: rgba(201, 162, 74, 0.28);
+  --radius: 14px;
+  --shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Noto Sans TC', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100%;
+}
+
+body {
+  background:
+    radial-gradient(ellipse at 20% -10%, rgba(201,162,74,0.08), transparent 55%),
+    radial-gradient(ellipse at 90% 10%, rgba(163,50,60,0.10), transparent 45%),
+    var(--bg-deep);
+  background-attachment: fixed;
+}
+
+h1, h2, h3 {
+  font-family: 'Noto Serif TC', serif;
+  color: var(--gold-light);
+  letter-spacing: 0.04em;
+  margin: 0 0 0.5em;
+}
+
+.brush {
+  font-family: 'Ma Shan Zheng', cursive;
+}
+
+a { color: var(--gold-light); text-decoration: none; }
+
+/* ---------- 版面容器 ---------- */
+.page {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 24px 20px 64px;
+}
+
+/* ---------- 頂部列 ---------- */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 4px 28px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 28px;
+}
+
+.topbar .logo {
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: 28px;
+  color: var(--gold-light);
+}
+
+.topbar .back {
+  font-size: 14px;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  padding: 6px 14px;
+  border-radius: 999px;
+  transition: all 0.2s ease;
+}
+.topbar .back:hover { color: var(--gold-light); border-color: var(--gold); }
+
+/* ---------- 卡片 ---------- */
+.card {
+  background: linear-gradient(180deg, var(--bg-panel-2), var(--bg-panel));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  position: relative;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px solid rgba(201,162,74,0.12);
+  border-radius: calc(var(--radius) - 4px);
+  pointer-events: none;
+}
+
+/* 首頁功能卡片格 */
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+  margin-top: 24px;
+}
+@media (max-width: 560px) {
+  .tool-grid { grid-template-columns: 1fr; }
+}
+
+.tool-card {
+  display: block;
+  background: linear-gradient(160deg, var(--bg-panel-2), var(--bg-panel));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px 20px;
+  box-shadow: var(--shadow);
+  transition: transform 0.25s ease, border-color 0.25s ease;
+}
+.tool-card:hover { transform: translateY(-4px); border-color: var(--gold); }
+
+.tool-card .glyph {
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: 34px;
+  color: var(--red-seal-light);
+  display: block;
+  margin-bottom: 10px;
+}
+.tool-card .name {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 18px;
+  color: var(--gold-light);
+  margin-bottom: 6px;
+}
+.tool-card .desc {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* ---------- 表單元件 ---------- */
+label {
+  display: block;
+  font-size: 14px;
+  color: var(--muted);
+  margin: 16px 0 6px;
+}
+
+input, select {
+  width: 100%;
+  background: var(--bg-deep);
+  border: 1px solid var(--border);
+  color: var(--ink);
+  padding: 11px 12px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-family: 'Noto Sans TC', sans-serif;
+}
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+
+.btn {
+  display: inline-block;
+  margin-top: 22px;
+  background: linear-gradient(135deg, var(--red-seal), var(--red-seal-light));
+  color: #fff2ee;
+  border: none;
+  padding: 13px 28px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(163,50,60,0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(163,50,60,0.45); }
+.btn:active { transform: translateY(0); }
+.btn:focus-visible { outline: 2px solid var(--gold-light); outline-offset: 3px; }
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--gold-light);
+  box-shadow: none;
+}
+
+/* ---------- 印章蓋章效果(全站簽名元素) ---------- */
+.seal-wrap {
+  position: relative;
+  min-height: 40px;
+}
+
+.seal {
+  position: absolute;
+  top: -6px;
+  right: 4px;
+  width: 64px;
+  height: 64px;
+  border: 3px solid var(--red-seal-light);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--red-seal-light);
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: 22px;
+  transform: scale(2.4) rotate(-18deg);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.seal.stamp {
+  animation: stampIn 0.5s cubic-bezier(.2,1.4,.4,1) forwards;
+}
+
+@keyframes stampIn {
+  0%   { transform: scale(2.6) rotate(-18deg); opacity: 0; }
+  55%  { transform: scale(0.92) rotate(-6deg); opacity: 0.9; }
+  75%  { transform: scale(1.06) rotate(-2deg); opacity: 1; }
+  100% { transform: scale(1) rotate(-4deg); opacity: 0.92; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .seal.stamp { animation: none; opacity: 0.92; transform: scale(1) rotate(-4deg); }
+}
+
+/* ---------- 結果面板 ---------- */
+.result {
+  margin-top: 28px;
+  padding: 22px;
+  border-radius: var(--radius);
+  background: var(--bg-deep);
+  border: 1px solid var(--border);
+  display: none;
+}
+.result.show { display: block; }
+
+.result .row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px dashed rgba(201,162,74,0.18);
+  font-size: 15px;
+}
+.result .row:last-child { border-bottom: none; }
+.result .row .label { color: var(--muted); }
+.result .row .value { color: var(--gold-light); font-weight: 700; }
+
+.result p.interp {
+  margin-top: 14px;
+  line-height: 1.9;
+  color: var(--ink);
+  font-size: 15px;
+}
+
+.hint {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin-top: 10px;
+  line-height: 1.7;
+}
+
+.footer-note {
+  text-align: center;
+  color: var(--muted);
+  font-size: 12.5px;
+  margin-top: 48px;
+  opacity: 0.7;
+}
